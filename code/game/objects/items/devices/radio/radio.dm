@@ -462,8 +462,7 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 		tcm.zlevels = list(position.z)
 		if(!instant)
 			// Simulate two seconds of lag
-			addtimer(CALLBACK(GLOBAL_PROC, .proc/broadcast_message, tcm), 20)
-			QDEL_IN(tcm, 20)
+			addtimer(CALLBACK(src, .proc/broadcast_callback, tcm), 2 SECONDS)
 		else
 			// Nukeops + Deathsquad headsets are instant and should work the same, whether there is comms or not
 			broadcast_message(tcm)
@@ -480,6 +479,13 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 		if(get_dist(src, M) <= canhear_range)
 			talk_into(M, message_pieces, null, verb)
 
+// To the person who asks "Why is this in a callback?"
+// You see, if you use QDEL_IN on the tcm and on broadcast_message()
+// The timer SS races itself and the message can be deleted before its sent
+// Having both in this callback removes that risk
+/obj/item/radio/proc/broadcast_callback(datum/tcomms_message/tcm)
+	broadcast_message(tcm)
+	qdel(tcm) // Delete the message datum
 
 /*
 /obj/item/radio/proc/accept_rad(obj/item/radio/R as obj, message)
@@ -508,9 +514,14 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 	if(freq in SSradio.ANTAG_FREQS)
 		if(!(syndiekey))//Checks to see if it's allowed on that frequency, based on the encryption keys
 			return -1
+		if(freq == SYND_TAIPAN_FREQ && !istype(syndiekey, /obj/item/encryptionkey/syndicate/taipan)) //Чтобы тайпановскую частоту, слышали только тайпановцы
+			return -1
+
 	if(!freq) //recieved on main frequency
 		if(!listening)
 			return -1
+	else if(syndiekey)
+		return canhear_range
 	else
 		var/accept = (freq==frequency && listening)
 		if(!accept)
@@ -621,6 +632,9 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 
 /obj/item/radio/borg/syndicate
 	keyslot = new /obj/item/encryptionkey/syndicate/nukeops
+
+/obj/item/radio/borg/syndicate/taipan
+	keyslot = new /obj/item/encryptionkey/syndicate/taipan/borg
 
 /obj/item/radio/borg/syndicate/ui_status(mob/user, datum/ui_state/state)
 	. = ..()

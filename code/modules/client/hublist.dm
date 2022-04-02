@@ -20,6 +20,9 @@
 	hublist_popup(user, response.body)
 
 /datum/proc/hublist_popup(mob/user, content)
+	if(!user)
+		return
+
 	var/dat = {"<html><meta charset="UTF-8"><body>"}
 	var/tally = length(GLOB.clients)
 	if(tally > 90)
@@ -42,7 +45,7 @@
 	if(holder && forced)
 		return FALSE
 
-	if(config.hublist_url)
+	if(config.hublist_url && SShttp && !(Master?.current_runlevel & RUNLEVEL_INIT))
 		var/datum/callback/cb = CALLBACK(src, /datum/.proc/hublist_fetch_callback, usr)
 		SShttp.create_async_request(RUSTG_HTTP_METHOD_GET, config.hublist_url, proc_callback=cb)
 	else

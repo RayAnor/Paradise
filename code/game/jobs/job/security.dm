@@ -138,6 +138,7 @@
 		/obj/item/storage/box/evidence = 1,
 		/obj/item/melee/classic_baton/telescopic = 1
 	)
+	satchel = /obj/item/storage/backpack/satchel_detective
 
 	implants = list(/obj/item/implant/mindshield)
 
@@ -211,6 +212,8 @@
 	selection_color = "#ffeeee"
 	access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_SURGERY, ACCESS_CHEMISTRY, ACCESS_VIROLOGY, ACCESS_GENETICS, ACCESS_SEC_DOORS, ACCESS_BRIG, ACCESS_COURT, ACCESS_MAINT_TUNNELS)
 	minimal_access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_SURGERY, ACCESS_SECURITY, ACCESS_SEC_DOORS, ACCESS_BRIG, ACCESS_COURT, ACCESS_MAINT_TUNNELS)
+	exp_requirements = 1800
+	exp_type = EXP_TYPE_MEDICAL
 	outfit = /datum/outfit/job/brigdoc
 
 /datum/outfit/job/brigdoc
